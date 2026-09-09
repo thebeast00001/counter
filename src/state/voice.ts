@@ -4,6 +4,7 @@ import {
   setAudioModeAsync,
   useAudioRecorder,
 } from 'expo-audio';
+import { File } from 'expo-file-system';
 import { useCallback, useState } from 'react';
 
 import { AiError, transcribe } from '@/ai/provider';
@@ -47,6 +48,33 @@ export type Voice = {
   stop: () => void;
 };
 
+/**
+ * Deletes a finished recording.
+ *
+ * `useAudioRecorder` writes to the cache directory and leaves the file there
+ * for the OS to reclaim whenever it feels like it. For most apps that is
+ * housekeeping; here the file is a shopkeeper saying a customer's name and an
+ * amount out loud, sitting in cleartext on the filesystem for an unbounded
+ * length of time. The Play declaration says a recording is not retained, and
+ * this is the line that makes that true rather than aspirational.
+ *
+ * Deleted in a `finally`, so a failed transcription does not leave the one
+ * recording nobody ever got any use from.
+ *
+ * `expo-file-system` is the same shape of trap as `expo-contacts`: the legacy
+ * `deleteAsync` still exports and is documented as throwing at runtime, so this
+ * uses the `File` class the SDK 57 module actually implements.
+ */
+function discard(uri: string | null): void {
+  if (!uri) return;
+  try {
+    new File(uri).delete();
+  } catch {
+    // A recording that was never written, or already collected. Nothing to do,
+    // and nothing worth interrupting the owner over.
+  }
+}
+
 export function useVoice(onHeard: (text: string) => void): Voice {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [state, setState] = useState<VoiceState>('idle');
@@ -84,23 +112,25 @@ export function useVoice(onHeard: (text: string) => void): Voice {
   const stop = useCallback(() => {
     void (async () => {
       setState('thinking');
+      let recording: string | null = null;
       try {
         await recorder.stop();
-        const uri = recorder.uri;
+        recording = recorder.uri;
 
         // Hand the audio session back before the network wait, not after.
         void setAudioModeAsync({ allowsRecording: false }).catch(() => {});
 
-        if (!uri) {
+        if (!recording) {
           setProblem('Nothing was recorded.');
           return;
         }
 
-        const heard = await transcribe(uri);
+        const heard = await transcribe(recording);
         onHeard(heard.text);
       } catch (err) {
         setProblem(err instanceof AiError ? err.message : 'Could not make out what was said.');
       } finally {
+        discard(recording);
         setState('idle');
       }
     })();
