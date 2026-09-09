@@ -48,7 +48,13 @@
       "expo-sharing",
       "./plugins/withAsyncStorageSize",
       "expo-notifications",
-      "expo-audio"
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": false,
+          "enableBackgroundRecording": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -59,7 +65,16 @@
     },
     "updates": {
       "enabled": true,
-      "fallbackToCacheTimeout": 0
-    }
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/c2eeaf8e-9fcb-402c-a4ba-30ef0391ed3f"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c2eeaf8e-9fcb-402c-a4ba-30ef0391ed3f"
+      }
+    },
+    "owner": "dogdaygod",
+    "ios": {}
   }
 }
