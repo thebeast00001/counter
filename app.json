@@ -17,6 +17,7 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.counter.app",
       "versionCode": 1,
+      "allowBackup": false,
       "permissions": [
         "READ_CONTACTS",
         "USE_BIOMETRIC",
