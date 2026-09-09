@@ -136,6 +136,15 @@ impressive. Breaking any of the three turns a useful feature into a liability:
   goes through the curtain like a typed question. Do not widen it, and do not let any
   surface claim that nothing identifying is ever sent while the microphone is on it — the
   empty state in `AssistantSheet` says which is which, and that sentence is load-bearing.
+
+  `useVoice` deletes the file in a `finally` once transcription has been attempted, and that
+  deletion is load-bearing too rather than housekeeping. `useAudioRecorder` writes to the
+  cache and leaves the file for the OS to reclaim whenever it chooses; the recording is a
+  shopkeeper saying a customer's name and an amount out loud, on a phone whose ledger we go
+  to the trouble of sealing with AES-GCM. Both the privacy policy in `web/` and the Play
+  Data Safety declaration state that a recording is not retained, so removing the deletion
+  makes two published compliance claims false. `expo-file-system`'s legacy `deleteAsync` is
+  another of the SDK 57 shims that throws at runtime — use the `File` class.
 - **The device answers first.** `src/domain/query.ts` handles the common questions exactly
   and offline; the model is only reached for on a miss. Never route a question the device
   already understands.
