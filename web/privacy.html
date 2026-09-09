@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Counter — privacy</title>
+    <meta
+      name="description"
+      content="What Counter records, what stays on your phone, and the two things that leave it."
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Counter</p>
+      <h1>Privacy</h1>
+
+      <p class="lede">
+        Counter keeps a small business's records on the phone that runs it. Nothing is uploaded
+        unless you switch something on, and there are exactly two things that can send data off
+        the device. Both are listed below, including the one that sends a recording without
+        removing names from it.
+      </p>
+
+      <h2>What Counter records</h2>
+      <p>
+        Whatever you enter: customers and their phone numbers, visits, payments, money owed,
+        prices, reminders, renewal dates, and any notes you write. Counter also derives figures
+        from those records — who has gone quiet, what is overdue, how a month compares — but those
+        are calculated on the phone each time and not stored separately.
+      </p>
+      <p class="note">
+        Records on the phone are encrypted with AES-256-GCM, using a key generated on the device
+        and held in its secure hardware. That key never leaves the phone, which also means nobody
+        else can decrypt the phone's copy — including us.
+      </p>
+
+      <h2>You do not need an account</h2>
+      <p>
+        The app is complete without one. There is no sign-up to use it, no email address, and no
+        password. A phone number is only involved if you turn on cloud backup, which is described
+        below and is off until you do.
+      </p>
+
+      <h2>The three optional things</h2>
+      <p>Each is off by default. Turning one on is the only way data leaves the device.</p>
+
+      <h2>1 · Cloud backup</h2>
+      <p>
+        If you enable it, your records are copied to our server so a lost phone does not mean a
+        lost business. Signing in uses your phone number and a one-time code — no email, no social
+        account. The sign-in is handled by <b>Clerk</b>, and the records are stored with
+        <b>Supabase</b>.
+      </p>
+      <p class="note">
+        Be clear about what this changes: your cloud backup is <b>not</b> end-to-end encrypted.
+        Customer names, phone numbers and notes are stored as ordinary database fields, protected
+        by access rules that tie every row to your account. That is a genuine protection against
+        other users, and it is not a protection against us — we could read a backup if we chose to.
+        The encryption described above covers the phone's own copy, not the server's. If that
+        matters to you, leave cloud backup off; everything else in the app still works.
+      </p>
+
+      <h2>2 · The assistant</h2>
+      <p>
+        Most questions are answered by the phone itself, offline, with nothing sent anywhere. When
+        a question is one the device cannot work out, it can be passed to a language model at
+        <b>Sarvam AI</b>, an Indian provider — but only if you have connected a model key of your
+        own.
+      </p>
+      <p>
+        Before a typed question is sent, names, phone numbers and free text are replaced with
+        tokens — a customer becomes <code>P4</code> — and put back after the answer returns. The
+        model is never given a name, and it is never asked to produce a figure: it chooses which of
+        seven lookups to run, and the phone does the arithmetic.
+      </p>
+
+      <h2>3 · Importing contacts</h2>
+      <p>
+        You can import customers from your phone's contacts instead of typing them. Counter reads
+        the names and numbers you select and saves them as ordinary records. It does not upload
+        your address book. Those records then behave like any other — which means they are included
+        in a cloud backup if you have one.
+      </p>
+
+      <h2>Spoken questions are the exception</h2>
+      <p>
+        If you ask a question out loud, <b>the recording is sent to Sarvam AI exactly as it was
+        made</b>, including any name you said. This is the one place the app cannot protect you the
+        way it protects typed questions, and the reason is unavoidable: audio cannot have names
+        removed before it is transcribed, because the transcription is the thing that would reveal
+        a name was in it.
+      </p>
+      <p class="note">
+        The exposure stops there. What comes back is put through the same tokenising as a typed
+        question before it goes any further, the recording is not kept after transcription, and the
+        screen with the microphone on it says this in plain words rather than burying it here. If
+        you would rather not, type instead — every question works either way.
+      </p>
+
+      <h2>What Counter never collects</h2>
+      <ul>
+        <li>No analytics, and no usage tracking of any kind.</li>
+        <li>No advertising identifiers, and no advertising.</li>
+        <li>
+          No location. The app blocks the location permissions outright, so it cannot request them
+          even by accident.
+        </li>
+        <li>No crash reports or diagnostics sent to us.</li>
+        <li>Nothing is sold or shared with anyone for marketing.</li>
+      </ul>
+
+      <h2>Who else is involved</h2>
+      <ul>
+        <li>
+          <b>Clerk</b> — your phone number, to sign you in. Only if you turn on cloud backup.
+        </li>
+        <li>
+          <b>Supabase</b> — your synced records. Only if you turn on cloud backup.
+        </li>
+        <li>
+          <b>Sarvam AI</b> — questions the phone cannot answer, with names replaced by tokens; and
+          voice recordings as they were made. Only if you connect a model key.
+        </li>
+      </ul>
+      <p class="note">
+        If you use none of the three, no third party receives anything, because the app makes no
+        network requests at all.
+      </p>
+
+      <h2>Permissions, and why</h2>
+      <ul>
+        <li><b>Contacts</b> — to import customers instead of typing them. Optional.</li>
+        <li><b>Microphone</b> — to ask questions out loud. Optional.</li>
+        <li><b>Notifications</b> — to show the reminders you set yourself.</li>
+        <li>
+          <b>Fingerprint or face unlock</b> — to lock the app, if you switch that on. The check is
+          done by your phone; Counter never sees your fingerprint or face.
+        </li>
+      </ul>
+
+      <h2>Deleting everything</h2>
+      <p>
+        Cloud backup and account deletion are covered in detail on
+        <a href="./delete-account.html">deleting your account</a>. To erase the phone's own copy,
+        use <b>Settings → Start over</b>. Both are immediate and neither can be undone.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        Counter is a tool for running a business and is not directed at children. We do not
+        knowingly collect anything from anyone under 13.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        If what the app sends ever changes, this page changes with it before the release ships, and
+        the date below is updated. A privacy page that lags the app is worse than none.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about any of this, or about your own data, go to
+        <a href="mailto:anshtyagi0404@gmail.com">anshtyagi0404@gmail.com</a>.
+      </p>
+
+      <footer>
+        <p>
+          Last updated September 2026 · Counter · <a href="./index.html">Home</a> ·
+          <a href="./delete-account.html">Delete your account</a>
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

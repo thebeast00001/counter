@@ -117,3 +117,12 @@ footer p {
   color: var(--faint);
   font-size: 0.875rem;
 }
+
+/* The privacy page names a redaction token inline. */
+code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.1em 0.32em;
+  background: rgba(127, 127, 140, 0.16);
+  border-radius: 3px;
+}
