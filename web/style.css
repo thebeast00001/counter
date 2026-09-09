@@ -1,0 +1,119 @@
+/*
+  One stylesheet for the two pages Google Play requires to exist somewhere other
+  than inside the app. Deliberately no framework and no build step: these have to
+  be servable from any static host — GitHub Pages, Netlify, a folder — for as
+  long as the app is listed, and a toolchain is a thing that rots.
+
+  Colours are the app's own tokens so the pages read as the same product.
+*/
+
+:root {
+  --bg: #000000;
+  --surface: #131316;
+  --text: #f7f7f8;
+  --dim: #9a9aa4;
+  --faint: #63636d;
+  --accent: #7fa6ff;
+  --hairline: rgba(255, 255, 255, 0.09);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #ffffff;
+    --surface: #f4f4f6;
+    --text: #101014;
+    --dim: #55555f;
+    --faint: #76767f;
+    --accent: #2558db;
+    --hairline: rgba(0, 0, 0, 0.1);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--faint);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 1.25rem;
+  font-size: 2rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  margin: 2.5rem 0 0.75rem;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  color: var(--dim);
+  font-size: 1.0625rem;
+}
+
+p,
+li {
+  color: var(--dim);
+}
+
+b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+ol,
+ul {
+  padding-left: 1.25rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
+}
+
+.note {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--faint);
+  font-size: 0.9375rem;
+}
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--hairline);
+}
+
+footer p {
+  color: var(--faint);
+  font-size: 0.875rem;
+}

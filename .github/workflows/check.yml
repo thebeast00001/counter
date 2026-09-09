@@ -1,0 +1,80 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Types first: everything below imports the real source, so a type error
+      # shows up here as a confusing runtime failure rather than as itself.
+      - name: types
+        run: npx tsc --noEmit
+
+      - name: unused code
+        run: npx tsc --noEmit --noUnusedLocals --noUnusedParameters || true
+
+      # Unit tests for the pure layer. Fast, and they cover the edges of one
+      # function at a time — which the sweeps below cannot, because each of
+      # them runs the whole business.
+      - name: unit tests
+        run: npm test
+
+      # Each of these imports the real modules rather than a copy, which is what
+      # stops them drifting from what the app actually does.
+      - name: contrast (WCAG AA + dichromacy)
+        run: node --experimental-strip-types scripts/contrast-audit.mjs
+
+      - name: empty and edge-case businesses
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/edge-check.mjs
+
+      - name: supabase key and url validation
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/supabase-check.mjs
+
+      - name: amounts and shorthand
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/amount-check.mjs
+
+      - name: onboarding compiler and vocabulary
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/compile-check.mjs
+
+      - name: upi parser
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/upi-check.mjs
+
+      - name: ai redaction curtain
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/ai-check.mjs
+
+      - name: wrapped
+        run: node --experimental-strip-types --import ./scripts/ts-alias.mjs scripts/wrap-check.mjs
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Credentials have been pasted into this project's chat history more than
+      # once. This makes the repository the one place they cannot end up.
+      #
+      # The pattern matches key *material*, not the prefixes as they appear in
+      # prose: the validators in `state/supabase.ts` and the notes in AGENTS.md
+      # both name `sb_secret_` on purpose, so a check that only knows the prefix
+      # fails on the very code written to refuse those keys — and a check that
+      # cries wolf is a check somebody switches off.
+      - name: no credentials committed
+        run: |
+          PATTERN='(sb_secret_|sk_live_|sk_test_)[A-Za-z0-9_-]{20,}|eyJ[A-Za-z0-9_-]{15,}[.][A-Za-z0-9_-]{30,}[.][A-Za-z0-9_-]{10,}|postgres(ql)?://[^[:space:]]+:[^[:space:]]+@'
+          if grep -rInE "$PATTERN"              --include='*.ts' --include='*.tsx' --include='*.js' --include='*.json'              --include='*.sql' --include='*.md' --include='*.yml'              --exclude-dir=node_modules --exclude-dir=.git . ; then
+            echo "::error::A credential is committed. Rotate it, then remove it."
+            exit 1
+          fi
+          echo "no credentials found"
